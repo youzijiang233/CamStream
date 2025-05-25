@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>实时监控</title>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', { 
+                year: '2-digit',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }).replace(/\//g, '-');
+            document.getElementById('current-time').textContent = timeString;
+        }
+        setInterval(updateTime, 1000);
+        window.onload = updateTime;
+    </script>
+</head>
+<body>
+    <h1>实时视频监控</h1>
+    <div>
+        <span>当前时间：</span>
+        <span id="current-time"></span> | 
+        <span>带宽：{{ "%.2f"|format(bandwidth) }} Mbps</span>
+    </div>
+    <img src="{{ url_for('video_feed') }}" width="{{ video_camera.width }}" height="{{ video_camera.height }}">
+    <br>
+    {% if current_user.username == 'youzijiang' %}
+        <a href="{{ url_for('admin_panel') }}">管理面板</a> | 
+    {% endif %}
+    <a href="{{ url_for('logout') }}">退出登录</a>
+</body>
+</html>

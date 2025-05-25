@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理面板</title>
+    <style>
+        :root {
+            --primary-color: #4a76a8;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --border-color: #ddd;
+            --bg-color: #f9f9f9;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: white;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-col {
+            flex: 1;
+        }
+        .alert {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-card {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .status-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            margin: 5px;
+        }
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .status-label {
+            color: #666;
+            font-size: 14px;
+        }
+        .inline-form {
+            display: inline-block;
+            margin: 0;
+        }
+        .camera-preview {
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        select.form-control {
+            height: 38px;
+        }
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            .status-item {
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>系统管理面板</h1>
+        
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">返回监控</a>
+            <a href="{{ url_for('logout') }}">退出系统</a>
+        </div>
+
+        <!-- 状态卡片 -->
+        <div class="status-card">
+            <div class="status-item">
+                <div class="status-value">{{ "%.2f"|format(bandwidth) }}</div>
+                <div class="status-label">实时带宽 (Mbps)</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">{{ "%.1f"|format(actual_fps) }}</div>
+                <div class="status-label">实际帧率 (FPS)</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">{{ users|length }}</div>
+                <div class="status-label">注册用户</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">{{ codes|length }}</div>
+                <div class="status-label">有效邀请码</div>
+            </div>
+        </div>
+
+        <!-- 消息提示 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- 视频设置 -->
+        <div class="section">
+            <h2>视频参数设置</h2>
+            <form method="post" action="{{ url_for('admin_action') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="update_settings">
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="width">分辨率宽度 (像素)</label>
+                            <input type="number" id="width" name="width" 
+                                   value="{{ width }}" min="320" max="1920" 
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="height">分辨率高度 (像素)</label>
+                            <input type="number" id="height" name="height" 
+                                   value="{{ height }}" min="240" max="1080" 
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="fps">目标帧率 (FPS)</label>
+                            <input type="number" id="fps" name="fps" 
+                                   value="{{ fps }}" min="1" max="60" 
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="camera_index">选择摄像头</label>
+                            <select id="camera_index" name="camera_index" class="form-control" required>
+                                {% for cam_index in available_cameras %}
+                                <option value="{{ cam_index }}" {% if cam_index == camera_index %}selected{% endif %}>
+                                    摄像头 {{ cam_index }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="codec">视频编码</label>
+                    <select id="codec" name="codec" class="form-control" required>
+                        <option value="H264" {% if codec == 'H264' %}selected{% endif %}>H.264 (高效压缩)</option>
+                        <option value="MJPG" {% if codec == 'MJPG' %}selected{% endif %}>MJPEG (高质量)</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">更新视频设置</button>
+            </form>
+        </div>
+
+        <!-- 用户管理 -->
+        <div class="section">
+            <h2>用户管理</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user[0] }}</td>
+                        <td>{{ user[1] }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin_action') }}" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="action" value="delete_user">
+                                <input type="hidden" name="user_id" value="{{ user[0] }}">
+                                <button type="submit" class="btn btn-danger" 
+                                        onclick="return confirm('确定要删除此用户吗？该操作不可恢复！')">
+                                    删除
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 邀请码管理 -->
+        <div class="section">
+            <h2>邀请码管理</h2>
+            <form method="post" action="{{ url_for('admin_action') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="add_code">
+                
+                <div class="form-group">
+                    <label for="new_code">添加新邀请码</label>
+                    <div style="display: flex;">
+                        <input type="text" id="new_code" name="new_code" 
+                               class="form-control" style="flex: 1; margin-right: 10px;" 
+                               placeholder="输入新邀请码" required>
+                        <button type="submit" class="btn btn-success">添加</button>
+                    </div>
+                </div>
+            </form>
+            
+            <h3>现有邀请码列表</h3>
+            {% if codes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>邀请码</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for code in codes %}
+                    <tr>
+                        <td>{{ code }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin_action') }}" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="action" value="delete_code">
+                                <input type="hidden" name="code" value="{{ code }}">
+                                <button type="submit" class="btn btn-danger" 
+                                        onclick="return confirm('确定要删除此邀请码吗？')">
+                                    删除
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>当前没有可用的邀请码</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // 实时更新带宽和帧率显示
+        function updateStats() {
+            fetch('/get_camera_info')
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('.status-value:nth-child(1)').textContent = 
+                        data.bandwidth.toFixed(2);
+                    document.querySelector('.status-value:nth-child(2)').textContent = 
+                        data.fps.toFixed(1);
+                });
+        }
+        
+        // 每2秒更新一次状态
+        setInterval(updateStats, 2000);
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+        });
+    </script>
+</body>
+</html>
