@@ -58,8 +58,6 @@ pip install -r requirements.txt
 #### 3. 运行程序
 
 ```
-bash
-复制编辑
 python app.py
 ```
 
@@ -88,8 +86,6 @@ python app.py
 ### 📁 项目结构
 
 ```
-csharp
-复制编辑
 CamStream/
 ├── app.py                 # 主程序入口
 ├── users.db               # 自动生成的数据库
