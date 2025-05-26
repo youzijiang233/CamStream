@@ -21,8 +21,8 @@ else:
 app = Flask(__name__, template_folder=template_folder)
 app.secret_key = 'your_very_strong_secret_key_here'
 app.config['ADMIN_CREDENTIALS'] = {
-    'username': 'youzijiang',
-    'password': generate_password_hash('20060209czh')
+    'username': 'admin',
+    'password': generate_password_hash('123456')
 }
 csrf = CSRFProtect(app)
 
